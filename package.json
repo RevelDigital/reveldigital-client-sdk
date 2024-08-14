@@ -1,0 +1,33 @@
+{
+  "name": "@reveldigital/client-sdk",
+  "version": "1.0.0",
+  "author": "Mike Tinnes <mike@reveldigital.com>",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "source": "src/main.ts",
+  "exports": {
+    "require": "./dist/main.cjs",
+    "default": "./dist/main.modern.js"
+  },
+  "main": "./dist/main.cjs",
+  "module": "./dist/main.module.js",
+  "unpkg": "./dist/main.umd.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "microbundle",
+    "build:lib": "microbundle --entry src/main.ts --name sdk --no-sourcemap --generateTypes false",
+    "build:dist": "npm run build:lib -- --output dist",
+    "build:debug": "npm run build:lib -- --output debug --no-compress",
+    "dev": "npm run clean && microbundle watch --entry src/main.ts --output dist --name sdk",
+    "deploy": "npm run build && npm publish"
+  },
+  "devDependencies": {
+    "microbundle": "^0.15.1",
+    "prettier": "2.0.5",
+    "rimraf": "3.0.2",
+    "typescript": "^4.0.3"
+  }
+}
