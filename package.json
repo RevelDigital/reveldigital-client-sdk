@@ -1,33 +1,61 @@
 {
   "name": "@reveldigital/client-sdk",
-  "version": "1.0.3-1",
+  "version": "1.0.0-alpha.0",
   "author": "Mike Tinnes <mike@reveldigital.com>",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "sideEffects": false,
   "type": "module",
-  "source": "src/main.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    "require": "./dist/main.cjs",
-    "default": "./dist/main.modern.js"
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
   },
-  "main": "./dist/main.cjs",
-  "module": "./dist/main.module.js",
-  "unpkg": "./dist/main.umd.js",
   "scripts": {
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
     "clean": "rimraf dist",
-    "build": "microbundle",
-    "build:lib": "microbundle --entry src/main.ts --name sdk --no-sourcemap --generateTypes false",
-    "build:dist": "npm run build:lib -- --output dist",
-    "build:debug": "npm run build:lib -- --output debug --no-compress",
-    "dev": "npm run clean && microbundle watch --entry src/main.ts --output dist --name sdk",
-    "deploy": "npm run build && npm publish"
+    "build": "shx rm -rf ./dist && microbundle --tsconfig ./tsconfig.json  --format modern,cjs  --output dist/index.js && shx cp  ./dist/index.d.ts ./dist/index.d.cts",
+    "type:check": "tsc --noEmit",
+    "gen:docs": "rimraf docs/api && typedoc --options typedoc.cjs",
+    "prepublishOnly": "pnpm build",
+    "prepare": "lefthook install",
+    "release": "pnpm run prepublishOnly && pnpm changeset publish"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-typescript": "^7.23.3",
+    "@biomejs/biome": "1.8.3",
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.11.24",
+    "@vitest/coverage-v8": "^2.0.5",
+    "babel-plugin-dev-expression": "^0.2.3",
+    "babel-plugin-transform-define": "^2.1.4",
+    "lefthook": "^1.3.2",
     "microbundle": "^0.15.1",
     "prettier": "2.0.5",
     "rimraf": "3.0.2",
-    "typescript": "^4.0.3"
+    "shx": "^0.3.4",
+    "typedoc": "^0.26.0",
+    "typedoc-plugin-markdown": "^3.17.1",
+    "typescript": "^5.3.3",
+    "vite-plugin-babel": "^1.2.0",
+    "jsdom": "24.1.1"
+  },
+  "dependencies": {
+    "vitest": "^2.0.5"
   }
 }
