@@ -1,0 +1,14 @@
+{
+    "plugin": [
+        "typedoc-plugin-markdown"
+    ],
+    "out": "./docs/api",
+    "readme": "none",
+    "entryPoints": [
+        "./src/index.ts"
+    ],
+    "excludePrivate": true,
+    "excludeInternal": true,
+    "excludeProtected": true,
+    "exclude": ["./src/globals.d.ts", "./src/__tests__"]
+}

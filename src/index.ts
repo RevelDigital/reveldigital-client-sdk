@@ -2,16 +2,10 @@ import { gadgets } from './gadget-types';
 import { IClient } from './interfaces/client.interface';
 import { IEventProperties } from './interfaces/event-properties.interface';
 
-export function test() {
-  console.log('Hello World!');
-  console.log('adsf');
-}
-
 /** @ignore */
 declare global {
   var Client: IClient;
 }
-
 
 export class PlayerClient {
 
