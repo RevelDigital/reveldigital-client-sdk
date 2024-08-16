@@ -1,10 +1,9 @@
 {
   "name": "@reveldigital/client-sdk",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0",
   "author": "Mike Tinnes <mike@reveldigital.com>",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "sideEffects": false,
   "type": "module",
