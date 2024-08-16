@@ -7,21 +7,63 @@ declare global {
   var Client: IClient;
 }
 
+export function createPlayerClient(): PlayerClient {
+  return new PlayerClient();
+}
+
 export class PlayerClient {
 
   /** @ignore */
   private clientPromise: Promise<IClient> | null | undefined;
 
+  constructor() {
+    //window.addEventListener('message', (e) => this._handleMessage(e), !0);
+  }
+
+  // private _handleMessage(e: MessageEvent<any>): any {
+  //   console.log(e);
+  // }
+
   /**
-* This method allows the gadget to communicate with player scripting.
-* If the appropriate scripting is in place in the currently running template, calling this method
-* will initiate a callback which can be acted upon in player script.
-* 
-* @example
-* client.callback('test', 'this');
-* 
-* @param args variable number of arguments
-*/
+   * Add an event listener for the specified player event.
+   * 
+   * @param eventName One of the following player events: 'Start', 'Stop', 'Command'
+   * @param callback function to call when the event is triggered
+   */
+  public on(eventName: string, callback: (data: any) => void): void {
+
+    window.addEventListener('message', (e) => {
+      if (e.data.name === 'RevelDigital.' + eventName) {
+        callback(e.data.data);
+      }
+    });
+  }
+
+  /**
+   * Remove an event listener for the specified player event.
+   * 
+   * @param eventName One of the following player events: 'Start', 'Stop', 'Command'
+   * @param callback function to remove
+   */
+  public off(eventName: string, callback: (data: any) => void): void {
+
+    window.removeEventListener('message', (e) => {
+      if (e.data.name === 'RevelDigital.' + eventName) {
+        callback(e.data.data);
+      }
+    });
+  }
+
+  /**
+   * This method allows the gadget to communicate with player scripting.
+   * If the appropriate scripting is in place in the currently running template, calling this method
+   * will initiate a callback which can be acted upon in player script.
+   * 
+   * @example
+   * client.callback('test', 'this');
+   * 
+   * @param args variable number of arguments
+   */
   public callback(...args: any[]): void {
 
     this.getClient().then((client) => {

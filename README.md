@@ -1,7 +1,3 @@
-**@reveldigital/client-sdk** • [**Docs**](globals.md)
-
-***
-
 # SDK Library
 
 Library for interfacing web apps with the Revel Digital player.

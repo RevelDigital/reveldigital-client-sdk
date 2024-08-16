@@ -1,12 +1,14 @@
 import { describe, expect, test } from "vitest"
 import { PlayerClient } from "../index"
+import { createPlayerClient } from "../index";
 
 describe("Test", () => {
     //test.todo("Write more tests!");
 
     test("Test PlayerClient", async () => {
 
-        const playerClient = new PlayerClient()
+        const playerClient = createPlayerClient();
+
         //expect(playerClient).toBeDefined()
         expect(playerClient).toBeInstanceOf(PlayerClient)
 

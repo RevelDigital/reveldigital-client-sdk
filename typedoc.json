@@ -3,7 +3,7 @@
         "typedoc-plugin-markdown"
     ],
     "out": "./docs/api",
-    "readme": "none",
+    "readme": "./README.md",
     "entryPoints": [
         "./src/index.ts"
     ],

@@ -2,7 +2,7 @@
 
 ***
 
-[@reveldigital/client-sdk](../README.md) / PlayerClient
+[@reveldigital/client-sdk](../globals.md) / PlayerClient
 
 # Class: PlayerClient
 
@@ -15,6 +15,10 @@
 #### Returns
 
 [`PlayerClient`](PlayerClient.md)
+
+#### Defined in
+
+[index.ts:19](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L19)
 
 ## Methods
 
@@ -44,7 +48,7 @@ client.callback('test', 'this');
 
 #### Defined in
 
-[index.ts:25](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L25)
+[index.ts:67](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L67)
 
 ***
 
@@ -61,7 +65,7 @@ This allows the player to proceed with the next item in a playlist if applicable
 
 #### Defined in
 
-[index.ts:250](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L250)
+[index.ts:292](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L292)
 
 ***
 
@@ -79,7 +83,7 @@ Map of commands currently active for this device.
 
 #### Defined in
 
-[index.ts:239](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L239)
+[index.ts:281](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L281)
 
 ***
 
@@ -97,7 +101,7 @@ Device key
 
 #### Defined in
 
-[index.ts:139](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L139)
+[index.ts:181](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L181)
 
 ***
 
@@ -122,7 +126,7 @@ Date/time in ISO8601 format
 
 #### Defined in
 
-[index.ts:76](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L76)
+[index.ts:118](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L118)
 
 ***
 
@@ -140,7 +144,7 @@ Timezone ID
 
 #### Defined in
 
-[index.ts:103](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L103)
+[index.ts:145](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L145)
 
 ***
 
@@ -158,7 +162,7 @@ Timezone Name
 
 #### Defined in
 
-[index.ts:91](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L91)
+[index.ts:133](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L133)
 
 ***
 
@@ -176,7 +180,7 @@ Timezone offset
 
 #### Defined in
 
-[index.ts:115](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L115)
+[index.ts:157](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L157)
 
 ***
 
@@ -194,7 +198,7 @@ Language code
 
 #### Defined in
 
-[index.ts:127](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L127)
+[index.ts:169](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L169)
 
 ***
 
@@ -223,7 +227,7 @@ constructor(public client: PlayerClientService) {
 
 #### Defined in
 
-[index.ts:64](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L64)
+[index.ts:106](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L106)
 
 ***
 
@@ -241,7 +245,7 @@ Path to the root folder
 
 #### Defined in
 
-[index.ts:227](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L227)
+[index.ts:269](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L269)
 
 ***
 
@@ -260,7 +264,7 @@ True if the gadget is running in preview mode, false otherwise.
 
 #### Defined in
 
-[index.ts:264](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L264)
+[index.ts:306](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L306)
 
 ***
 
@@ -285,7 +289,59 @@ Optional. User supplied session ID. If not supplied a random session ID will be 
 
 #### Defined in
 
-[index.ts:211](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L211)
+[index.ts:253](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L253)
+
+***
+
+### off()
+
+> **off**(`eventName`, `callback`): `void`
+
+Remove an event listener for the specified player event.
+
+#### Parameters
+
+• **eventName**: `string`
+
+One of the following player events: 'Start', 'Stop', 'Command'
+
+• **callback**
+
+function to remove
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[index.ts:48](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L48)
+
+***
+
+### on()
+
+> **on**(`eventName`, `callback`): `void`
+
+Add an event listener for the specified player event.
+
+#### Parameters
+
+• **eventName**: `string`
+
+One of the following player events: 'Start', 'Stop', 'Command'
+
+• **callback**
+
+function to call when the event is triggered
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[index.ts:33](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L33)
 
 ***
 
@@ -311,7 +367,7 @@ Command argument
 
 #### Defined in
 
-[index.ts:152](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L152)
+[index.ts:194](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L194)
 
 ***
 
@@ -342,7 +398,7 @@ Command arg
 
 #### Defined in
 
-[index.ts:167](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L167)
+[index.ts:209](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L209)
 
 ***
 
@@ -372,7 +428,7 @@ client.track("test", { "a": "b" });
 
 #### Defined in
 
-[index.ts:197](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L197)
+[index.ts:239](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L239)
 
 ***
 
@@ -399,4 +455,4 @@ A map of user defined properties to associate with this event
 
 #### Defined in
 
-[index.ts:181](https://github.com/RevelDigital/reveldigital-client-sdk/blob/7b9e06ed7db8d66feba746d9ae80ffa7c7eaa7c1/src/index.ts#L181)
+[index.ts:223](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L223)
