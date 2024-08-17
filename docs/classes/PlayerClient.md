@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[index.ts:30](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L30)
+[index.ts:30](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L30)
 
 ## Methods
 
@@ -52,7 +52,7 @@ client.callback('test', 'this');
 
 #### Defined in
 
-[index.ts:95](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L95)
+[index.ts:95](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L95)
 
 ***
 
@@ -69,7 +69,7 @@ This allows the player to proceed with the next item in a playlist if applicable
 
 #### Defined in
 
-[index.ts:320](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L320)
+[index.ts:320](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L320)
 
 ***
 
@@ -87,7 +87,7 @@ Map of commands currently active for this device.
 
 #### Defined in
 
-[index.ts:309](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L309)
+[index.ts:309](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L309)
 
 ***
 
@@ -105,7 +105,7 @@ Device key
 
 #### Defined in
 
-[index.ts:209](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L209)
+[index.ts:209](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L209)
 
 ***
 
@@ -130,7 +130,7 @@ Date/time in ISO8601 format
 
 #### Defined in
 
-[index.ts:146](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L146)
+[index.ts:146](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L146)
 
 ***
 
@@ -148,7 +148,7 @@ Timezone ID
 
 #### Defined in
 
-[index.ts:173](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L173)
+[index.ts:173](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L173)
 
 ***
 
@@ -166,7 +166,7 @@ Timezone Name
 
 #### Defined in
 
-[index.ts:161](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L161)
+[index.ts:161](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L161)
 
 ***
 
@@ -184,7 +184,7 @@ Timezone offset
 
 #### Defined in
 
-[index.ts:185](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L185)
+[index.ts:185](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L185)
 
 ***
 
@@ -202,7 +202,7 @@ Language code
 
 #### Defined in
 
-[index.ts:197](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L197)
+[index.ts:197](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L197)
 
 ***
 
@@ -231,7 +231,7 @@ constructor(public client: PlayerClientService) {
 
 #### Defined in
 
-[index.ts:134](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L134)
+[index.ts:134](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L134)
 
 ***
 
@@ -249,7 +249,7 @@ Path to the root folder
 
 #### Defined in
 
-[index.ts:297](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L297)
+[index.ts:297](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L297)
 
 ***
 
@@ -268,7 +268,7 @@ True if the gadget is running in preview mode, false otherwise.
 
 #### Defined in
 
-[index.ts:334](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L334)
+[index.ts:334](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L334)
 
 ***
 
@@ -293,7 +293,7 @@ Optional. User supplied session ID. If not supplied a random session ID will be 
 
 #### Defined in
 
-[index.ts:281](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L281)
+[index.ts:281](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L281)
 
 ***
 
@@ -315,7 +315,7 @@ type of event to listen for
 
 #### Defined in
 
-[index.ts:75](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L75)
+[index.ts:75](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L75)
 
 ***
 
@@ -341,7 +341,7 @@ function to call when the event is triggered
 
 #### Defined in
 
-[index.ts:58](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L58)
+[index.ts:58](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L58)
 
 ***
 
@@ -367,7 +367,7 @@ Command argument
 
 #### Defined in
 
-[index.ts:222](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L222)
+[index.ts:222](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L222)
 
 ***
 
@@ -398,7 +398,7 @@ Command arg
 
 #### Defined in
 
-[index.ts:237](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L237)
+[index.ts:237](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L237)
 
 ***
 
@@ -428,7 +428,7 @@ client.track("test", { "a": "b" });
 
 #### Defined in
 
-[index.ts:267](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L267)
+[index.ts:267](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L267)
 
 ***
 
@@ -455,4 +455,4 @@ A map of user defined properties to associate with this event
 
 #### Defined in
 
-[index.ts:251](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L251)
+[index.ts:251](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L251)

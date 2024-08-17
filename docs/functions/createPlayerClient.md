@@ -18,4 +18,4 @@
 
 ## Defined in
 
-[index.ts:13](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L13)
+[index.ts:13](https://github.com/RevelDigital/reveldigital-client-sdk/blob/e7505973683eb731b7003441b59ca26fc17779c3/src/index.ts#L13)
