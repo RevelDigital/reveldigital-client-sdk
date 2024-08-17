@@ -1,6 +1,6 @@
 {
   "name": "@reveldigital/client-sdk",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.6",
   "author": "Mike Tinnes <mike@reveldigital.com>",
   "files": [
     "dist"
@@ -55,6 +55,7 @@
     "vite-plugin-babel": "^1.2.0"
   },
   "dependencies": {
+    "@reveldigital/gadget-types": "1.0.0",
     "vitest": "^2.0.5"
   }
 }

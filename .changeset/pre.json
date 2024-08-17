@@ -4,5 +4,13 @@
   "initialVersions": {
     "@reveldigital/client-sdk": "1.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "angry-cats-arrive",
+    "gold-onions-cheer",
+    "hip-eagles-matter",
+    "plenty-monkeys-wave",
+    "quick-colts-tap",
+    "thick-bikes-film",
+    "weak-walls-clean"
+  ]
 }

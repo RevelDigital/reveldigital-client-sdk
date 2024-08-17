@@ -1,14 +1,17 @@
-import { gadgets } from './gadget-types';
+import { gadgets } from '@reveldigital/gadget-types';
+import { EventType } from './enums/event-types';
 import { IClient } from './interfaces/client.interface';
 import { IEventProperties } from './interfaces/event-properties.interface';
+import { IOptions } from './interfaces/options.interface';
+
 
 /** @ignore */
 declare global {
   var Client: IClient;
 }
 
-export function createPlayerClient(): PlayerClient {
-  return new PlayerClient();
+export function createPlayerClient(options?: IOptions): PlayerClient {
+  return new PlayerClient(options);
 }
 
 export class PlayerClient {
@@ -16,42 +19,67 @@ export class PlayerClient {
   /** @ignore */
   private clientPromise: Promise<IClient> | null | undefined;
 
-  constructor() {
-    //window.addEventListener('message', (e) => this._handleMessage(e), !0);
+  private handlerFn = function (callback: (data: any) => void): EventListenerOrEventListenerObject {
+    return function actualHandler(e: Event) {
+      callback((<CustomEvent>e).detail);
+    }
   }
+  private handlers = new Map<string, EventListenerOrEventListenerObject>();
 
-  // private _handleMessage(e: MessageEvent<any>): any {
-  //   console.log(e);
-  // }
+
+  constructor(options?: IOptions) {
+
+    /**
+     * Legacy method for trapping events from the player side.
+     */
+    if (options?.useLegacyEventHandling) {
+      (window as any).RevelDigital = {
+        Controller: {
+          onCommand: function (name: string, arg: string) {
+            window.dispatchEvent(new CustomEvent(`RevelDigital.${EventType.COMMAND}`, { detail: { name, arg } }));
+          },
+          onStart: function () {
+            window.dispatchEvent(new CustomEvent(`RevelDigital.${EventType.START}`));
+          },
+          onStop: function () {
+            window.dispatchEvent(new CustomEvent(`RevelDigital.${EventType.STOP}`));
+          }
+        }
+      }
+    }
+  }
 
   /**
    * Add an event listener for the specified player event.
    * 
-   * @param eventName One of the following player events: 'Start', 'Stop', 'Command'
+   * @param {EventType} eventType type of event to listen for
    * @param callback function to call when the event is triggered
    */
-  public on(eventName: string, callback: (data: any) => void): void {
+  public on(eventType: EventType, callback: (data: any) => void): void {
 
-    window.addEventListener('message', (e) => {
-      if (e.data.name === 'RevelDigital.' + eventName) {
-        callback(e.data.data);
-      }
-    });
+    this.handlers.set(eventType, this.handlerFn(callback));
+
+    window.addEventListener(`RevelDigital.${eventType}`,
+      this.handlers.get(eventType) as EventListenerOrEventListenerObject);
+
+    // window.addEventListener(`RevelDigital.${eventName}`, (e: Event) => {
+    //   callback((<CustomEvent>e).detail);
+    // });
   }
 
   /**
    * Remove an event listener for the specified player event.
    * 
-   * @param eventName One of the following player events: 'Start', 'Stop', 'Command'
-   * @param callback function to remove
+   * @param {EventType} eventType type of event to listen for
    */
-  public off(eventName: string, callback: (data: any) => void): void {
+  public off(eventType: EventType): void {
 
-    window.removeEventListener('message', (e) => {
-      if (e.data.name === 'RevelDigital.' + eventName) {
-        callback(e.data.data);
-      }
-    });
+    window.removeEventListener(`RevelDigital.${eventType}`,
+      this.handlers.get(eventType) as EventListenerOrEventListenerObject);
+
+    // window.removeEventListener(`RevelDigital.${eventName}`, (e: Event) => {
+    //   callback((<CustomEvent>e).detail);
+    // });
   }
 
   /**
@@ -218,7 +246,7 @@ export class PlayerClient {
    * Events are used for tracking various metrics including usage statistics, player condition, state changes, etc.
    * 
    * @param eventName Unique name for this event
-   * @param properties A map of user defined properties to associate with this event
+   * @param {IEventProperties} properties A map of user defined properties to associate with this event
    */
   public track(eventName: string, properties?: IEventProperties): void {
 

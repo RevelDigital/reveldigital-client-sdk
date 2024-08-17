@@ -6,7 +6,11 @@
 
 # Function: createPlayerClient()
 
-> **createPlayerClient**(): [`PlayerClient`](../classes/PlayerClient.md)
+> **createPlayerClient**(`options`?): [`PlayerClient`](../classes/PlayerClient.md)
+
+## Parameters
+
+• **options?**: `IOptions`
 
 ## Returns
 
@@ -14,4 +18,4 @@
 
 ## Defined in
 
-[index.ts:10](https://github.com/RevelDigital/reveldigital-client-sdk/blob/07971f0d78ea6011de154b80d847680ae80aad92/src/index.ts#L10)
+[index.ts:13](https://github.com/RevelDigital/reveldigital-client-sdk/blob/a1466ef04f10e84390769032f8674e17dad69cbb/src/index.ts#L13)
