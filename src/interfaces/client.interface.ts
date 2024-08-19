@@ -27,7 +27,9 @@ export interface IClient {
 
     getRevelRoot(): Promise<string | null>;
 
-    getCommandMap(): Promise<any | null>;
+    getCommandMap(): Promise<string | null>;
 
     finish(): void;
+
+    getDevice(): Promise<string | null>;
 }

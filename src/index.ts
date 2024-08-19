@@ -3,6 +3,7 @@ import { EventType } from './enums/event-types';
 import { IClient } from './interfaces/client.interface';
 import { IEventProperties } from './interfaces/event-properties.interface';
 import { IOptions } from './interfaces/options.interface';
+import { IDevice } from './interfaces/device.interface';
 
 
 /** @ignore */
@@ -61,10 +62,6 @@ export class PlayerClient {
 
     window.addEventListener(`RevelDigital.${eventType}`,
       this.handlers.get(eventType) as EventListenerOrEventListenerObject);
-
-    // window.addEventListener(`RevelDigital.${eventName}`, (e: Event) => {
-    //   callback((<CustomEvent>e).detail);
-    // });
   }
 
   /**
@@ -76,10 +73,6 @@ export class PlayerClient {
 
     window.removeEventListener(`RevelDigital.${eventType}`,
       this.handlers.get(eventType) as EventListenerOrEventListenerObject);
-
-    // window.removeEventListener(`RevelDigital.${eventName}`, (e: Event) => {
-    //   callback((<CustomEvent>e).detail);
-    // });
   }
 
   /**
@@ -306,11 +299,11 @@ export class PlayerClient {
    * 
    * @returns Map of commands currently active for this device.
    */
-  public async getCommandMap(): Promise<any | null> {
+  public async getCommandMap(): Promise<string | null> {
 
     const client = await this.getClient();
 
-    return JSON.parse(await client.getCommandMap());
+    return JSON.parse(<string>await client.getCommandMap());
   }
 
   /**
@@ -336,6 +329,41 @@ export class PlayerClient {
     const client = await this.getClient();
 
     return client instanceof NoopClient;
+  }
+
+  /**
+   * Returns the device details associated with the player running the gadget or web app.
+   * 
+   * @returns Device details.
+   */
+  public async getDevice(): Promise<IDevice | null> {
+
+    const client = await this.getClient();
+
+    let obj: any = JSON.parse(<string>await client.getDevice());
+
+    const device: IDevice[] = [obj].map((device: any) => {
+
+      return {
+        name: device.name,
+        registrationKey: device.key,
+        deviceType: device.devicetype,
+        enteredService: new Date(device.enteredservice),
+        langCode: device.langcode,
+        timeZone: device.timezone,
+        tags: device.description?.split('\n'),
+        location: {
+          city: device.location?.city,
+          state: device.location?.state,
+          country: device.location?.country,
+          postalCode: device.location?.postalcode,
+          address: device.location?.address,
+          latitude: device.location?.latitude,
+          longitude: device.location?.longitude
+        }
+      }
+    });
+    return device[0];
   }
 
 
@@ -485,5 +513,10 @@ class NoopClient implements IClient {
   public finish(): void {
 
     // NOOP implement, nothing to do....
+  }
+
+  public async getDevice(): Promise<any | null> {
+
+    return Promise.resolve(null);
   }
 }

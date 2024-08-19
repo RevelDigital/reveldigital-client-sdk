@@ -19,4 +19,4 @@ const api = createPlayerClient();
 await api.callback('hello world');
 ```
 
- [**API Documentation**](globals.md)
+ [**API Documentation**](https://reveldigital.github.io/reveldigital-client-sdk/)

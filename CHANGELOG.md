@@ -1,5 +1,35 @@
 # @reveldigital/client-sdk
 
+## 1.0.0-alpha.11
+
+### Patch Changes
+
+- fix address field
+
+## 1.0.0-alpha.10
+
+### Patch Changes
+
+- fix tags
+
+## 1.0.0-alpha.9
+
+### Patch Changes
+
+- fix getDevice
+
+## 1.0.0-alpha.8
+
+### Patch Changes
+
+- add device mapping
+
+## 1.0.0-alpha.7
+
+### Patch Changes
+
+- add getDevice() method
+
 ## 1.0.0-alpha.6
 
 ### Patch Changes
