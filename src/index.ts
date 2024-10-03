@@ -33,7 +33,7 @@ export class PlayerClient {
     /**
      * Legacy method for trapping events from the player side.
      */
-    if (options?.useLegacyEventHandling) {
+    if (options?.useLegacyEventHandling !== false) {
       (window as any).RevelDigital = {
         Controller: {
           onCommand: function (name: string, arg: string) {
@@ -340,7 +340,14 @@ export class PlayerClient {
 
     const client = await this.getClient();
 
-    let obj: any = JSON.parse(<string>await client.getDevice());
+    let deviceJson = await client.getDevice();
+    if (deviceJson == null) {
+      return null;
+    }
+    let obj: any = JSON.parse(deviceJson);
+    if (obj == null) {
+      return null;
+    }
 
     const device: IDevice[] = [obj].map((device: any) => {
 

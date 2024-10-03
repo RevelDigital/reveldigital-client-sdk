@@ -1,5 +1,17 @@
 # @reveldigital/client-sdk
 
+## 1.0.0-alpha.13
+
+### Patch Changes
+
+- add null check
+
+## 1.0.0-alpha.12
+
+### Patch Changes
+
+- check null device
+
 ## 1.0.0-alpha.11
 
 ### Patch Changes

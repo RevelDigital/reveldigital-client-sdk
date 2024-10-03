@@ -1,6 +1,6 @@
 {
   "name": "@reveldigital/client-sdk",
-  "version": "1.0.0-alpha.11",
+  "version": "1.0.0-alpha.13",
   "author": "Mike Tinnes <mike@reveldigital.com>",
   "files": [
     "dist"
