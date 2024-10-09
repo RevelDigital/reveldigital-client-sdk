@@ -4,6 +4,7 @@ import { IClient } from './interfaces/client.interface';
 import { IEventProperties } from './interfaces/event-properties.interface';
 import { IOptions } from './interfaces/options.interface';
 import { IDevice } from './interfaces/device.interface';
+import { version } from './version';
 
 
 /** @ignore */
@@ -307,7 +308,7 @@ export class PlayerClient {
   }
 
   /**
-   * Indicate to the player that this gadget has finished it's visualization.
+   * Indicate to the player that this app has finished it's visualization.
    * This allows the player to proceed with the next item in a playlist if applicable.
    */
   public finish(): void {
@@ -371,6 +372,53 @@ export class PlayerClient {
       }
     });
     return device[0];
+  }
+
+  /**
+   * Returns the width of the visualization area.
+   * 
+   * @returns Width of the visualization area
+   */
+  public async getWidth(): Promise<number | null> {
+
+    const client = await this.getClient();
+
+    return client.getWidth();
+  }
+
+  /**
+   * Returns the height of the visualization area.
+   * 
+   * @returns Height of the visualization area
+   */
+  public async getHeight(): Promise<number | null> {
+
+    const client = await this.getClient();
+
+    return client.getHeight();
+  }
+
+  /**
+   * Returns the duration of the currently playing source.
+   * (only applicable when associated with a playlist)
+   * 
+   * @returns Duration of the current item in milliseconds
+   */
+  public async getDuration(): Promise<number | null> {
+
+    const client = await this.getClient();
+
+    return client.getDuration();
+  }
+
+  /**
+   * Returns the current SDK version.
+   * 
+   * @returns SDK version
+   */
+  public async getSdkVersion(): Promise<string> {
+
+    return Promise.resolve(version);
   }
 
 
@@ -525,5 +573,25 @@ class NoopClient implements IClient {
   public async getDevice(): Promise<any | null> {
 
     return Promise.resolve(null);
+  }
+
+  public async getWidth(): Promise<number | null> {
+
+    return Promise.resolve(null);
+  }
+
+  public async getHeight(): Promise<number | null> {
+
+    return Promise.resolve(null);
+  }
+
+  public async getDuration(): Promise<number | null> {
+
+    return Promise.resolve(null);
+  }
+
+  public async getSdkVersion(): Promise<string> {
+
+    return Promise.resolve(version);
   }
 }

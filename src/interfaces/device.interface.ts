@@ -45,12 +45,11 @@ export interface IDevice {
     timeZone?: string;
 
     /**
-     * Device properties
+     * Device tags
      * 
      * @type {Array<string>}
      */
     tags: Array<string>;
-
 
     /**
      * Device location

@@ -1,5 +1,11 @@
 # @reveldigital/client-sdk
 
+## 1.0.0-alpha.14
+
+### Patch Changes
+
+- add methods for width, height, and duration
+
 ## 1.0.0-alpha.13
 
 ### Patch Changes
