@@ -587,6 +587,6 @@ npm run gen:docs
 ## Resources
 
 - [**API Documentation**](https://reveldigital.github.io/reveldigital-client-sdk/)
-- [Revel Digital Platform](https://reveldigital.com)
-- [Google Gadgets API](https://developers.google.com/gadgets/docs/basic)
+- [Revel Digital Platform](https://www.reveldigital.com)
+- [Revel Digital Webapps](https://developer.reveldigital.com/webapps/)
 
