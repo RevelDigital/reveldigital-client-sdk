@@ -37,6 +37,30 @@ const deviceKey = await client.getDeviceKey();
 client.callback('hello', 'world');
 ```
 
+## Table of Contents
+
+- [Framework Integration](#framework-integration)
+  - [React Integration](#react-integration)
+  - [Angular Integration](#angular-integration)
+  - [Vue 3 Integration](#vue-3-integration)
+- [API Reference](#api-reference)
+  - [Core Methods](#core-methods)
+  - [Event Types](#event-types)
+- [Best Practices](#best-practices)
+  - [Error Handling](#error-handling)
+  - [Performance Considerations](#performance-considerations)
+  - [Security Notes](#security-notes)
+- [Deployment with GitHub Actions](#deployment-with-github-actions)
+  - [Setting up the GitHub Action](#setting-up-the-github-action)
+  - [Action Inputs](#action-inputs)
+  - [Environment Management](#environment-management)
+  - [Advanced Configuration](#advanced-configuration)
+  - [Best Practices](#best-practices-1)
+  - [Troubleshooting](#troubleshooting)
+- [TypeScript Support](#typescript-support)
+- [Development](#development)
+- [Resources](#resources)
+
 ## Framework Integration
 
 ### React Integration
@@ -555,6 +579,292 @@ try {
 - Validate all data received from player events
 - Use HTTPS for any external API calls from your content
 
+## Deployment with GitHub Actions
+
+The Revel Digital Webapp Deploy Action makes it easy to automatically deploy your web applications to your Revel Digital account whenever you push code to your repository.
+
+### Setting up the GitHub Action
+
+1. **Get your API Key**: First, obtain your Revel Digital API key from your account settings.
+
+2. **Add API Key to GitHub Secrets**: 
+   - Go to your repository settings
+   - Navigate to "Secrets and variables" → "Actions" 
+   - Create a new secret named `REVEL_API_KEY` with your API key as the value
+
+3. **Create the workflow file**: Add `.github/workflows/deploy.yml` to your repository:
+
+#### Basic Deployment Workflow
+
+```yaml
+name: Deploy to Revel Digital
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Deploy to Revel Digital
+        uses: RevelDigital/webapp-action@v1.0.11
+        with:
+          api-key: ${{ secrets.REVEL_API_KEY }}
+          environment: ${{ github.ref_name }}
+```
+
+#### Framework-Specific Examples
+
+##### React Application
+
+```yaml
+name: Deploy React App
+
+on:
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build React app
+        run: npm run build
+
+      - name: Deploy to Revel Digital
+        uses: RevelDigital/webapp-action@v1.0.11
+        with:
+          api-key: ${{ secrets.REVEL_API_KEY }}
+          name: "My React Signage App"
+          version: ${{ github.sha }}
+          environment: ${{ github.ref_name == 'main' && 'Production' || 'Development' }}
+          distribution-location: './build'
+          tags: 'react,interactive'
+```
+
+##### Angular Application
+
+```yaml
+name: Deploy Angular App
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Angular app
+        run: ng build --configuration production
+
+      - name: Deploy to Revel Digital
+        uses: RevelDigital/webapp-action@v1.0.11
+        with:
+          api-key: ${{ secrets.REVEL_API_KEY }}
+          name: "My Angular Signage App"
+          environment: "Production"
+          distribution-location: './dist'
+          tags: 'angular,enterprise'
+```
+
+##### Vue Application
+
+```yaml
+name: Deploy Vue App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Vue app
+        run: npm run build
+
+      - name: Deploy to Revel Digital
+        uses: RevelDigital/webapp-action@v1.0.11
+        with:
+          api-key: ${{ secrets.REVEL_API_KEY }}
+          name: "My Vue Signage App"
+          environment: ${{ github.event_name == 'push' && 'Production' || 'Development' }}
+          distribution-location: './dist'
+          group-name: 'signage-.*'
+```
+
+### Action Inputs
+
+| Input | Required | Description | Default |
+|-------|----------|-------------|---------|
+| `api-key` | ✅ | Your Revel Digital API key (use GitHub secrets) | - |
+| `name` | ❌ | Name for the webapp | From package.json |
+| `version` | ❌ | Version of the webapp | From package.json |
+| `environment` | ❌ | Deployment environment | `Production` |
+| `distribution-location` | ❌ | Folder containing built assets | From package.json |
+| `tags` | ❌ | Extra tags for smart scheduling (comma-delimited) | - |
+| `group-name` | ❌ | Group name as regex pattern | - |
+
+### Environment Management
+
+You can deploy to different environments based on your branch strategy:
+
+```yaml
+# Deploy to Development for feature branches
+# Deploy to Production for main branch
+environment: ${{ github.ref_name == 'main' && 'Production' || 'Development' }}
+
+# Or use custom logic
+environment: ${{ 
+  github.ref_name == 'main' && 'Production' || 
+  github.ref_name == 'staging' && 'Staging' || 
+  'Development' 
+}}
+```
+
+### Advanced Configuration
+
+#### Multi-Environment with Matrix Strategy
+
+```yaml
+name: Deploy to Multiple Environments
+
+on:
+  push:
+    branches: [ main, staging, develop ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - branch: main
+            environment: Production
+            tags: 'production,stable'
+          - branch: staging
+            environment: Staging
+            tags: 'staging,testing'
+          - branch: develop
+            environment: Development
+            tags: 'development,experimental'
+    
+    if: github.ref_name == matrix.branch
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup and Build
+        # ... build steps ...
+
+      - name: Deploy to Revel Digital
+        uses: RevelDigital/webapp-action@v1.0.11
+        with:
+          api-key: ${{ secrets.REVEL_API_KEY }}
+          environment: ${{ matrix.environment }}
+          tags: ${{ matrix.tags }}
+```
+
+#### Conditional Deployment
+
+```yaml
+name: Conditional Deploy
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[deploy]') || github.ref == 'refs/heads/main'
+    
+    steps:
+      # ... deployment steps
+```
+
+### Best Practices
+
+1. **Use Semantic Versioning**: Let the action pull version from `package.json` or use Git tags
+2. **Environment Separation**: Use different environments for different branches
+3. **Tag Management**: Use meaningful tags for content organization and smart scheduling
+4. **Build Optimization**: Ensure your build process creates optimized, production-ready assets
+5. **Security**: Always use GitHub Secrets for API keys, never commit them to your repository
+
+### Troubleshooting
+
+- **Build Failures**: Ensure your build command works locally before deploying
+- **Permission Issues**: Verify your API key has the necessary permissions in Revel Digital
+- **Path Issues**: Check that `distribution-location` points to the correct build output folder
+- **Environment Issues**: Confirm the environment name exists in your Revel Digital account
+
 ## TypeScript Support
 
 This library is written in TypeScript and includes full type definitions. Import types as needed:
@@ -589,4 +899,5 @@ npm run gen:docs
 - [**API Documentation**](https://reveldigital.github.io/reveldigital-client-sdk/)
 - [Revel Digital Platform](https://www.reveldigital.com)
 - [Revel Digital Webapps](https://developer.reveldigital.com/webapps/)
+- [Revel Digital Webapp Github Action](https://github.com/marketplace/actions/revel-digital-webapp-deploy-action)
 
