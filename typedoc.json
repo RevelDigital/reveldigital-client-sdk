@@ -2,7 +2,7 @@
     "plugin": [
         "typedoc-plugin-markdown"
     ],
-    "out": "./docs/api",
+    "out": "./docs",
     "readme": "./README.md",
     "entryPoints": [
         "./src/index.ts"

@@ -1,14 +1,19 @@
-import { gadgets } from './gadget-types';
+import { gadgets } from '@reveldigital/gadget-types';
+import { EventType } from './enums/event-types';
 import { IClient } from './interfaces/client.interface';
 import { IEventProperties } from './interfaces/event-properties.interface';
+import { IOptions } from './interfaces/options.interface';
+import { IDevice } from './interfaces/device.interface';
+import { version } from './version';
+
 
 /** @ignore */
 declare global {
   var Client: IClient;
 }
 
-export function createPlayerClient(): PlayerClient {
-  return new PlayerClient();
+export function createPlayerClient(options?: IOptions): PlayerClient {
+  return new PlayerClient(options);
 }
 
 export class PlayerClient {
@@ -16,42 +21,59 @@ export class PlayerClient {
   /** @ignore */
   private clientPromise: Promise<IClient> | null | undefined;
 
-  constructor() {
-    //window.addEventListener('message', (e) => this._handleMessage(e), !0);
+  private handlerFn = function (callback: (data: any) => void): EventListenerOrEventListenerObject {
+    return function actualHandler(e: Event) {
+      callback((<CustomEvent>e).detail);
+    }
   }
+  private handlers = new Map<string, EventListenerOrEventListenerObject>();
 
-  // private _handleMessage(e: MessageEvent<any>): any {
-  //   console.log(e);
-  // }
+
+  constructor(options?: IOptions) {
+
+    /**
+     * Legacy method for trapping events from the player side.
+     */
+    if (options?.useLegacyEventHandling !== false) {
+      (window as any).RevelDigital = {
+        Controller: {
+          onCommand: function (name: string, arg: string) {
+            window.dispatchEvent(new CustomEvent(`RevelDigital.${EventType.COMMAND}`, { detail: { name, arg } }));
+          },
+          onStart: function () {
+            window.dispatchEvent(new CustomEvent(`RevelDigital.${EventType.START}`));
+          },
+          onStop: function () {
+            window.dispatchEvent(new CustomEvent(`RevelDigital.${EventType.STOP}`));
+          }
+        }
+      }
+    }
+  }
 
   /**
    * Add an event listener for the specified player event.
    * 
-   * @param eventName One of the following player events: 'Start', 'Stop', 'Command'
+   * @param {EventType} eventType type of event to listen for
    * @param callback function to call when the event is triggered
    */
-  public on(eventName: string, callback: (data: any) => void): void {
+  public on(eventType: EventType, callback: (data: any) => void): void {
 
-    window.addEventListener('message', (e) => {
-      if (e.data.name === 'RevelDigital.' + eventName) {
-        callback(e.data.data);
-      }
-    });
+    this.handlers.set(eventType, this.handlerFn(callback));
+
+    window.addEventListener(`RevelDigital.${eventType}`,
+      this.handlers.get(eventType) as EventListenerOrEventListenerObject);
   }
 
   /**
    * Remove an event listener for the specified player event.
    * 
-   * @param eventName One of the following player events: 'Start', 'Stop', 'Command'
-   * @param callback function to remove
+   * @param {EventType} eventType type of event to listen for
    */
-  public off(eventName: string, callback: (data: any) => void): void {
+  public off(eventType: EventType): void {
 
-    window.removeEventListener('message', (e) => {
-      if (e.data.name === 'RevelDigital.' + eventName) {
-        callback(e.data.data);
-      }
-    });
+    window.removeEventListener(`RevelDigital.${eventType}`,
+      this.handlers.get(eventType) as EventListenerOrEventListenerObject);
   }
 
   /**
@@ -218,7 +240,7 @@ export class PlayerClient {
    * Events are used for tracking various metrics including usage statistics, player condition, state changes, etc.
    * 
    * @param eventName Unique name for this event
-   * @param properties A map of user defined properties to associate with this event
+   * @param {IEventProperties} properties A map of user defined properties to associate with this event
    */
   public track(eventName: string, properties?: IEventProperties): void {
 
@@ -278,15 +300,15 @@ export class PlayerClient {
    * 
    * @returns Map of commands currently active for this device.
    */
-  public async getCommandMap(): Promise<any | null> {
+  public async getCommandMap(): Promise<string | null> {
 
     const client = await this.getClient();
 
-    return JSON.parse(await client.getCommandMap());
+    return JSON.parse(<string>await client.getCommandMap());
   }
 
   /**
-   * Indicate to the player that this gadget has finished it's visualization.
+   * Indicate to the player that this app has finished it's visualization.
    * This allows the player to proceed with the next item in a playlist if applicable.
    */
   public finish(): void {
@@ -308,6 +330,95 @@ export class PlayerClient {
     const client = await this.getClient();
 
     return client instanceof NoopClient;
+  }
+
+  /**
+   * Returns the device details associated with the player running the gadget or web app.
+   * 
+   * @returns Device details.
+   */
+  public async getDevice(): Promise<IDevice | null> {
+
+    const client = await this.getClient();
+
+    let deviceJson = await client.getDevice();
+    if (deviceJson == null) {
+      return null;
+    }
+    let obj: any = JSON.parse(deviceJson);
+    if (obj == null) {
+      return null;
+    }
+
+    const device: IDevice[] = [obj].map((device: any) => {
+
+      return {
+        name: device.name,
+        registrationKey: device.key,
+        deviceType: device.devicetype,
+        enteredService: new Date(device.enteredservice),
+        langCode: device.langcode,
+        timeZone: device.timezone,
+        tags: device.description?.split('\n'),
+        location: {
+          city: device.location?.city,
+          state: device.location?.state,
+          country: device.location?.country,
+          postalCode: device.location?.postalcode,
+          address: device.location?.address,
+          latitude: device.location?.latitude,
+          longitude: device.location?.longitude
+        }
+      }
+    });
+    return device[0];
+  }
+
+  /**
+   * Returns the width of the visualization area.
+   * 
+   * @returns Width of the visualization area
+   */
+  public async getWidth(): Promise<number | null> {
+
+    const client = await this.getClient();
+
+    return client.getWidth();
+  }
+
+  /**
+   * Returns the height of the visualization area.
+   * 
+   * @returns Height of the visualization area
+   */
+  public async getHeight(): Promise<number | null> {
+
+    const client = await this.getClient();
+
+    return client.getHeight();
+  }
+
+  /**
+   * Returns the duration of the currently playing source.
+   * (only applicable when associated with a playlist)
+   * 
+   * @returns Duration of the current item in milliseconds
+   */
+  public async getDuration(): Promise<number | null> {
+
+    const client = await this.getClient();
+
+    return client.getDuration();
+  }
+
+  /**
+   * Returns the current SDK version.
+   * 
+   * @returns SDK version
+   */
+  public async getSdkVersion(): Promise<string> {
+
+    return Promise.resolve(version);
   }
 
 
@@ -457,5 +568,30 @@ class NoopClient implements IClient {
   public finish(): void {
 
     // NOOP implement, nothing to do....
+  }
+
+  public async getDevice(): Promise<any | null> {
+
+    return Promise.resolve(null);
+  }
+
+  public async getWidth(): Promise<number | null> {
+
+    return Promise.resolve(null);
+  }
+
+  public async getHeight(): Promise<number | null> {
+
+    return Promise.resolve(null);
+  }
+
+  public async getDuration(): Promise<number | null> {
+
+    return Promise.resolve(null);
+  }
+
+  public async getSdkVersion(): Promise<string> {
+
+    return Promise.resolve(version);
   }
 }

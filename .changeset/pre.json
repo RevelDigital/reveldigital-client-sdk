@@ -1,0 +1,24 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@reveldigital/client-sdk": "1.0.0"
+  },
+  "changesets": [
+    "angry-cats-arrive",
+    "five-foxes-care",
+    "gold-onions-cheer",
+    "happy-bees-doubt",
+    "hip-eagles-matter",
+    "lucky-peas-beg",
+    "nervous-cows-unite",
+    "plenty-monkeys-wave",
+    "quick-colts-tap",
+    "quick-lobsters-thank",
+    "shaggy-experts-return",
+    "sharp-olives-lay",
+    "smart-seahorses-double",
+    "thick-bikes-film",
+    "weak-walls-clean"
+  ]
+}

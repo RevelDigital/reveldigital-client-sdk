@@ -1,10 +1,9 @@
 {
   "name": "@reveldigital/client-sdk",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.14",
   "author": "Mike Tinnes <mike@reveldigital.com>",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "sideEffects": false,
   "type": "module",
@@ -27,12 +26,13 @@
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "clean": "rimraf dist",
-    "build": "shx rm -rf ./dist && microbundle --tsconfig ./tsconfig.json  --format modern,cjs  --output dist/index.js && shx cp  ./dist/index.d.ts ./dist/index.d.cts",
+    "build": "npm run gen:version && shx rm -rf ./dist && microbundle --tsconfig ./tsconfig.json  --format modern,cjs  --output dist/index.js && shx cp ./dist/index.d.ts ./dist/index.d.cts",
     "type:check": "tsc --noEmit",
-    "gen:docs": "rimraf docs/api && typedoc",
+    "gen:docs": "rimraf docs/api && npx typedoc --plugin typedoc-plugin-missing-exports",
     "prepublishOnly": "pnpm build",
     "prepare": "lefthook install",
-    "release": "pnpm run prepublishOnly && pnpm changeset publish"
+    "release": "pnpm run prepublishOnly && pnpm changeset publish",
+    "gen:version": "genversion ./src/version.ts --esm"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
@@ -47,15 +47,18 @@
     "jsdom": "24.1.1",
     "lefthook": "^1.3.2",
     "microbundle": "^0.15.1",
-    "prettier": "2.0.5",
+    "prettier": "^3.3.3",
     "rimraf": "3.0.2",
     "shx": "^0.3.4",
     "typedoc": "^0.26.0",
     "typedoc-plugin-markdown": "^4.0.0",
     "typescript": "^5.3.3",
-    "vite-plugin-babel": "^1.2.0"
+    "vite-plugin-babel": "^1.2.0",
+    "genversion": "^3.2.0"
   },
   "dependencies": {
+    "@reveldigital/gadget-types": "1.0.0",
+    "typedoc-plugin-missing-exports": "^3.0.0",
     "vitest": "^2.0.5"
   }
 }

@@ -2,4 +2,4 @@
 "@reveldigital/client-sdk": patch
 ---
 
-initial changeset
+export options interface
