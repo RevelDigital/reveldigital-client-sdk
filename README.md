@@ -506,6 +506,8 @@ export default {
 
 ## API Reference
 
+[API Documentation](https://reveldigital.github.io/reveldigital-client-sdk/)
+
 ### Core Methods
 
 #### `createPlayerClient(options?: IOptions): PlayerClient`
