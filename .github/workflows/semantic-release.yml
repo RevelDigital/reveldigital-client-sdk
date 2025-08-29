@@ -1,5 +1,5 @@
 name: Semantic Release Action
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+run-name: ${{ github.actor }} is running Semantic Release 🚀
 on: [push]
 jobs:
   Semantic-Release-Action:
