@@ -606,7 +606,7 @@ The Revel Digital Webapp Deploy Action makes it easy to automatically deploy you
 
 ### For Gadgets
 
-Gadgets are deployed to GitHub Pages and use the Gadgetizer tool for packaging. This approach doesn't require a Revel Digital API key and leverages GitHub's built-in Pages hosting.
+Gadgets are deployed to GitHub Pages and use the [Gadgetizer tool](https://www.npmjs.com/package/@reveldigital/gadgetizer) for packaging. This approach doesn't require a Revel Digital API key and leverages GitHub's built-in Pages hosting.
 
 #### Setting up the GitHub Action for Gadgets
 
@@ -834,7 +834,7 @@ For gadgets, the deployment process is simpler as it uses GitHub Pages:
 
 - **No API Key Required**: Gadgets don't need a Revel Digital API key
 - **GitHub Pages Hosting**: Content is automatically hosted on GitHub Pages
-- **Gadgetizer Processing**: The `@reveldigital/gadgetizer` tool processes your content for optimal display
+- **Gadgetizer Processing**: The [`@reveldigital/gadgetizer`](https://www.npmjs.com/package/@reveldigital/gadgetizer) tool processes your content for optimal display
 - **Output Directory**: Ensure your `publish_dir` matches your build output (commonly `./dist`, `./build`, or `./public`)
 - **Branch Protection**: Consider protecting your main branch to prevent accidental deployments
 
@@ -933,7 +933,7 @@ jobs:
 #### For Gadgets
 1. **GitHub Pages Setup**: Ensure GitHub Pages is properly configured in your repository settings
 2. **Build Output**: Verify your build process outputs to the correct directory specified in `publish_dir`
-3. **Gadgetizer Compatibility**: Test that your content works correctly with the Gadgetizer tool
+3. **Gadgetizer Compatibility**: Test that your content works correctly with the [Gadgetizer tool](https://www.npmjs.com/package/@reveldigital/gadgetizer)
 4. **Branch Strategy**: Use branch protection rules to control when deployments occur
 5. **Asset Optimization**: Optimize images and other assets for signage display performance
 
@@ -950,7 +950,7 @@ jobs:
 #### Gadget Issues
 - **GitHub Pages Not Enabled**: Verify GitHub Pages is enabled in repository settings
 - **Build Failures**: Test your build process locally and ensure it outputs to the correct directory
-- **Gadgetizer Errors**: Check that your content structure is compatible with the Gadgetizer tool
+- **Gadgetizer Errors**: Check that your content structure is compatible with the [Gadgetizer tool](https://www.npmjs.com/package/@reveldigital/gadgetizer)
 - **Deployment Path Issues**: Ensure `publish_dir` matches your actual build output directory
 - **Permission Issues**: Verify the `GITHUB_TOKEN` has proper permissions for Pages deployment
 
