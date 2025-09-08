@@ -51,7 +51,10 @@ client.callback('hello', 'world');
   - [Performance Considerations](#performance-considerations)
   - [Security Notes](#security-notes)
 - [Deployment with GitHub Actions](#deployment-with-github-actions)
-  - [Setting up the GitHub Action](#setting-up-the-github-action)
+  - [For Webapps](#for-webapps)
+  - [Setting up the GitHub Action for Webapps](#setting-up-the-github-action-for-webapps)
+  - [For Gadgets](#for-gadgets)
+  - [Setting up the GitHub Action for Gadgets](#setting-up-the-github-action-for-gadgets)
   - [Action Inputs](#action-inputs)
   - [Environment Management](#environment-management)
   - [Advanced Configuration](#advanced-configuration)
@@ -583,9 +586,13 @@ try {
 
 ## Deployment with GitHub Actions
 
+There are two deployment options available depending on your project type:
+
+### For Webapps
+
 The Revel Digital Webapp Deploy Action makes it easy to automatically deploy your web applications to your Revel Digital account whenever you push code to your repository.
 
-### Setting up the GitHub Action
+#### Setting up the GitHub Action for Webapps
 
 1. **Get your API Key**: First, obtain your Revel Digital API key from your account settings.
 
@@ -596,7 +603,58 @@ The Revel Digital Webapp Deploy Action makes it easy to automatically deploy you
 
 3. **Create the workflow file**: Add `.github/workflows/deploy.yml` to your repository:
 
-#### Basic Deployment Workflow
+### For Gadgets
+
+Gadgets are deployed to GitHub Pages and use the Gadgetizer tool for packaging. This approach doesn't require a Revel Digital API key and leverages GitHub's built-in Pages hosting.
+
+#### Setting up the GitHub Action for Gadgets
+
+1. **Enable GitHub Pages**: 
+   - Go to your repository settings
+   - Navigate to "Pages" 
+   - Set the source to "GitHub Actions"
+
+2. **Create the workflow file**: Add `.github/workflows/deploy.yml` to your repository:
+
+#### Basic Gadget Deployment Workflow
+
+```yaml
+name: Deploy Gadget to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # or master, depending on your default branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (if applicable for building)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x' # Adjust as needed for your project
+
+      - name: Install dependencies (if applicable)
+        run: npm install # Or yarn install, etc.
+
+      - name: Build static site (if applicable)
+        run: npm run build # Or your specific build command
+
+      - name: Gadgetizer
+        run: npx @reveldigital/gadgetizer@latest --build-only
+        
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist # Or your output directory, e.g., ./dist, ./public
+```
+
+#### Basic Webapp Deployment Workflow
 
 ```yaml
 name: Deploy to Revel Digital
@@ -632,9 +690,9 @@ jobs:
           environment: ${{ github.ref_name }}
 ```
 
-#### Framework-Specific Examples
+#### Framework-Specific Webapp Examples
 
-##### React Application
+##### React Webapp
 
 ```yaml
 name: Deploy React App
@@ -674,7 +732,7 @@ jobs:
           tags: 'react,interactive'
 ```
 
-##### Angular Application
+##### Angular Webapp
 
 ```yaml
 name: Deploy Angular App
@@ -716,7 +774,7 @@ jobs:
           tags: 'angular,enterprise'
 ```
 
-##### Vue Application
+##### Vue Webapp
 
 ```yaml
 name: Deploy Vue App
@@ -757,7 +815,7 @@ jobs:
           group-name: 'signage-.*'
 ```
 
-### Action Inputs
+### Action Inputs (For Webapps)
 
 | Input | Required | Description | Default |
 |-------|----------|-------------|---------|
@@ -768,6 +826,16 @@ jobs:
 | `distribution-location` | ❌ | Folder containing built assets | From package.json |
 | `tags` | ❌ | Extra tags for smart scheduling (comma-delimited) | - |
 | `group-name` | ❌ | Group name as regex pattern | - |
+
+### Gadget Deployment Notes
+
+For gadgets, the deployment process is simpler as it uses GitHub Pages:
+
+- **No API Key Required**: Gadgets don't need a Revel Digital API key
+- **GitHub Pages Hosting**: Content is automatically hosted on GitHub Pages
+- **Gadgetizer Processing**: The `@reveldigital/gadgetizer` tool processes your content for optimal display
+- **Output Directory**: Ensure your `publish_dir` matches your build output (commonly `./dist`, `./build`, or `./public`)
+- **Branch Protection**: Consider protecting your main branch to prevent accidental deployments
 
 ### Environment Management
 
@@ -854,18 +922,36 @@ jobs:
 
 ### Best Practices
 
+#### For Webapps
 1. **Use Semantic Versioning**: Let the action pull version from `package.json` or use Git tags
 2. **Environment Separation**: Use different environments for different branches
 3. **Tag Management**: Use meaningful tags for content organization and smart scheduling
 4. **Build Optimization**: Ensure your build process creates optimized, production-ready assets
 5. **Security**: Always use GitHub Secrets for API keys, never commit them to your repository
 
+#### For Gadgets
+1. **GitHub Pages Setup**: Ensure GitHub Pages is properly configured in your repository settings
+2. **Build Output**: Verify your build process outputs to the correct directory specified in `publish_dir`
+3. **Gadgetizer Compatibility**: Test that your content works correctly with the Gadgetizer tool
+4. **Branch Strategy**: Use branch protection rules to control when deployments occur
+5. **Asset Optimization**: Optimize images and other assets for signage display performance
+
 ### Troubleshooting
 
+#### Webapp Issues
+
+#### Webapp Issues
 - **Build Failures**: Ensure your build command works locally before deploying
 - **Permission Issues**: Verify your API key has the necessary permissions in Revel Digital
 - **Path Issues**: Check that `distribution-location` points to the correct build output folder
 - **Environment Issues**: Confirm the environment name exists in your Revel Digital account
+
+#### Gadget Issues
+- **GitHub Pages Not Enabled**: Verify GitHub Pages is enabled in repository settings
+- **Build Failures**: Test your build process locally and ensure it outputs to the correct directory
+- **Gadgetizer Errors**: Check that your content structure is compatible with the Gadgetizer tool
+- **Deployment Path Issues**: Ensure `publish_dir` matches your actual build output directory
+- **Permission Issues**: Verify the `GITHUB_TOKEN` has proper permissions for Pages deployment
 
 ## TypeScript Support
 
