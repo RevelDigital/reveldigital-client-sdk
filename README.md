@@ -63,6 +63,7 @@ client.callback('hello', 'world');
 - [TypeScript Support](#typescript-support)
 - [Development](#development)
 - [Resources](#resources)
+  - [Example Projects](#example-projects)
 
 ## Framework Integration
 
@@ -988,6 +989,12 @@ npm run gen:docs
 - [Revel Digital Platform](https://www.reveldigital.com)
 - [Revel Digital Webapps](https://developer.reveldigital.com/webapps/)
 - [Revel Digital Webapp Github Action](https://github.com/marketplace/actions/revel-digital-webapp-deploy-action)
+
+### Example Projects
+
+- [**React**](https://github.com/RevelDigital/gadget-demo-react)
+- [**Vue**](https://github.com/RevelDigital/gadget-demo-vue)
+- [**Vanilla JavaScript**](https://github.com/RevelDigital/gadget-demo-vanilla-js)
 
 ## License
 
