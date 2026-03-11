@@ -1,10 +1,40 @@
 import { gadgets } from '@reveldigital/gadget-types';
 import { EventType } from './enums/event-types';
 import { IClient } from './interfaces/client.interface';
+import { IDictionary } from './interfaces/config.interface';
+import { IDataTableOptions } from './interfaces/datatable.interface';
 import { IEventProperties } from './interfaces/event-properties.interface';
 import { IOptions } from './interfaces/options.interface';
 import { IDevice } from './interfaces/device.interface';
+import { DataTableRef, DataTablePrefRef } from './datatable-ref';
 import { version } from './version';
+
+// Re-export all public types
+export { EventType } from './enums/event-types';
+export { DataTableRef, DataTablePrefRef } from './datatable-ref';
+export type { ICommand } from './interfaces/command.interface';
+export { ConfigType } from './interfaces/config.interface';
+export type { IConfig, IDictionary } from './interfaces/config.interface';
+export type {
+  DataTableFilterOp,
+  DataTableFilterValue,
+  DataTableColumnType,
+  IDataTableFilterOperator,
+  IDataTableFilter,
+  IDataTableOptions,
+  IDataTableQueryParams,
+  IDataTableRow,
+  IDataTableResult,
+  IDataTableColumn,
+  IDataTableSchema,
+  IDataTableChangeEvent,
+  IDataTablePrefFilterRule,
+  IDataTablePref
+} from './interfaces/datatable.interface';
+export type { IDevice } from './interfaces/device.interface';
+export type { IEventProperties } from './interfaces/event-properties.interface';
+export type { ILocation } from './interfaces/location.interface';
+export type { IOptions } from './interfaces/options.interface';
 
 
 /** @ignore */
@@ -49,6 +79,26 @@ export class PlayerClient {
         }
       }
     }
+
+    // Listen for postMessage events from the player
+    window.addEventListener('message', (messageEvent: MessageEvent) => {
+      if (typeof messageEvent.data !== 'string') return;
+
+      try {
+        const parsed = JSON.parse(messageEvent.data);
+
+        if (parsed.type === 'applyConfig' && parsed.isOpener) {
+          parsed.isOpener = false;
+          window.parent.postMessage(JSON.stringify(parsed), '*');
+        } else if (parsed.type === 'openConfig') {
+          window.dispatchEvent(new CustomEvent(`RevelDigital.${EventType.CONFIG}`));
+        }
+
+        window.dispatchEvent(new CustomEvent(`RevelDigital.${EventType.POSTMESSAGE}`, { detail: parsed }));
+      } catch {
+        // Ignore non-JSON messages
+      }
+    });
   }
 
   /**
@@ -413,12 +463,96 @@ export class PlayerClient {
 
   /**
    * Returns the current SDK version.
-   * 
+   *
    * @returns SDK version
    */
   public async getSdkVersion(): Promise<string> {
 
     return Promise.resolve(version);
+  }
+
+  /**
+   * Applies configuration preferences to the gadget (preview mode only).
+   *
+   * This method is only available when running in preview mode (typically during
+   * gadget development or testing in the CMS).
+   *
+   * @param prefs - Dictionary of preference key-value pairs to apply
+   */
+  public async applyConfig(prefs: IDictionary<any>): Promise<void> {
+
+    if (await this.isPreviewMode()) {
+      const client = await this.getClient();
+      client.applyConfig(prefs);
+    } else {
+      console.log(
+        '%capplyConfig() is only available in preview mode.',
+        'background-color:blue; color:yellow;'
+      );
+    }
+  }
+
+  /**
+   * Creates a typed wrapper for a Revel Digital data table.
+   *
+   * The data table feature must be enabled for the gadget. The returned
+   * {@link DataTableRef} provides typed Promise-based methods and callback-based
+   * event handling for real-time row change events.
+   *
+   * @param tableId - The data table ID (e.g. 'tbl_menu_items')
+   * @param options - Optional configuration overrides
+   * @returns A {@link DataTableRef} instance
+   * @throws Error if the global datatable library is not loaded
+   *
+   * @example
+   * const dt = client.createDataTable('tbl_menu_items');
+   *
+   * // Fetch rows with filtering and sorting
+   * const result = await dt.getRows({
+   *   filter: { category: 'Entree', price: { op: 'lte', value: 25 } },
+   *   sort: 'price',
+   *   sortDir: 'asc'
+   * });
+   *
+   * // Subscribe to real-time updates
+   * dt.on('rowUpdated', (change) => console.log('Row updated:', change));
+   * dt.on('rowCreated', (change) => console.log('Row created:', change));
+   * dt.on('rowDeleted', (change) => console.log('Row deleted:', change));
+   *
+   * // Cleanup when done
+   * dt.dispose();
+   */
+  public createDataTable(tableId: string, options?: IDataTableOptions): DataTableRef {
+    return new DataTableRef(tableId, options);
+  }
+
+  /**
+   * Creates a typed data table wrapper from a gadget preference value.
+   *
+   * The preference JSON string (as serialized by the template editor's datatable
+   * option) is parsed and used to auto-configure filter, sort, and logic settings.
+   * The returned {@link DataTablePrefRef} provides a `getFilteredRows()` convenience
+   * method that applies these settings automatically.
+   *
+   * @param prefValue - The raw gadget preference string (JSON)
+   * @param options - Optional configuration overrides
+   * @returns A {@link DataTablePrefRef} instance
+   * @throws Error if the global datatable library is not loaded
+   *
+   * @example
+   * const cfg = client.createDataTableFromPref(prefs.getString('rdDataTable'));
+   *
+   * // Fetch rows with auto-wired filter + sort
+   * const result = await cfg.getFilteredRows();
+   *
+   * // Access the underlying DataTableRef for events, schema, etc.
+   * cfg.dataTable.on('rowUpdated', (change) => console.log(change));
+   *
+   * // Cleanup when done
+   * cfg.dispose();
+   */
+  public createDataTableFromPref(prefValue: string, options?: IDataTableOptions): DataTablePrefRef {
+    return new DataTablePrefRef(prefValue, options);
   }
 
 
@@ -493,6 +627,23 @@ class NoopClient implements IClient {
       '%cClient API not available, falling back to mock API',
       'background-color:blue; color:yellow;'
     );
+  }
+
+  public applyConfig(prefs: IDictionary<any>): void {
+
+    const evt = { type: 'applyConfig', prefs: prefs, isOpener: window.opener !== null };
+
+    if (window.opener) {
+      window.opener.postMessage(
+        JSON.stringify(evt),
+        '*'
+      );
+    } else {
+      window.parent.postMessage(
+        JSON.stringify(evt),
+        '*'
+      );
+    }
   }
 
   public callback(...args: any[]): void {

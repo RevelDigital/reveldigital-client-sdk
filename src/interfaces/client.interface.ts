@@ -1,10 +1,12 @@
+import { IDictionary } from './config.interface';
+
 /** @ignore */
 export interface IClient {
 
     /**
      * Callback to the player.
      * This is the primary method of communication between the client and the player.
-     * 
+     *
      * @param {...any[]} args
      * @returns {void}
      * @memberof IClient
@@ -166,9 +168,18 @@ export interface IClient {
 
     /**
      * Get the SDK version
-     * 
+     *
      * @returns {Promise<string | null>}
      * @memberof IClient
      */
     getSdkVersion(): Promise<string | null>;
+
+    /**
+     * Apply configuration preferences (preview mode only).
+     *
+     * @param prefs Dictionary of preference key-value pairs
+     * @returns {void}
+     * @memberof IClient
+     */
+    applyConfig(prefs: IDictionary<any>): void;
 }
