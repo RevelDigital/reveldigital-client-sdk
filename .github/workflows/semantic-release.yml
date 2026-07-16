@@ -1,6 +1,12 @@
 name: Semantic Release Action
 run-name: ${{ github.actor }} is running Semantic Release 🚀
-on: [push]
+# Only the branches in package.json's `release.branches` can produce a release, so
+# don't run on every branch. workflow_dispatch allows re-running a release that was
+# skipped, without needing a dummy commit.
+on:
+  push:
+    branches: [main, next]
+  workflow_dispatch:
 jobs:
   Semantic-Release-Action:
     runs-on: ubuntu-latest
@@ -11,6 +17,10 @@ jobs:
           version: 10
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # semantic-release derives the last release from the tag history, so it needs
+          # all of it — not the default shallow clone.
+          fetch-depth: 0
       - name: Install dependencies (including dev dependencies)
         run: pnpm install
       - name: Semantic Release
