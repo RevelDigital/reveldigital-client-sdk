@@ -3,7 +3,7 @@
  *
  * @enum {string}
  */
-export const enum EventType {
+export enum EventType {
     START = 'Start',
     STOP = 'Stop',
     COMMAND = 'Command',

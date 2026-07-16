@@ -25,13 +25,25 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
+    },
+    "./testing": {
+      "import": {
+        "types": "./dist/testing.d.ts",
+        "default": "./dist/testing.js"
+      },
+      "require": {
+        "types": "./dist/testing.d.cts",
+        "default": "./dist/testing.cjs"
+      }
     }
   },
   "scripts": {
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "clean": "rimraf dist",
-    "build": "npm run gen:version && shx rm -rf ./dist && microbundle --tsconfig ./tsconfig.json  --format modern,cjs  --output dist/index.js && shx cp ./dist/index.d.ts ./dist/index.d.cts",
+    "build": "npm run gen:version && shx rm -rf ./dist && npm run build:main && npm run build:testing",
+    "build:main": "microbundle --tsconfig ./tsconfig.json  --format modern,cjs  --output dist/index.js && shx cp ./dist/index.d.ts ./dist/index.d.cts",
+    "build:testing": "microbundle --tsconfig ./tsconfig.json --format modern,cjs --entry src/testing.ts --output dist/testing.js && shx cp ./dist/testing.d.ts ./dist/testing.d.cts",
     "type:check": "tsc --noEmit",
     "gen:docs": "rimraf docs/api && npx typedoc --plugin typedoc-plugin-missing-exports",
     "prepublishOnly": "pnpm build",

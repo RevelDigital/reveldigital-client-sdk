@@ -10,6 +10,7 @@ A TypeScript/JavaScript library for interfacing web applications with the Revel 
 - 📊 **Analytics**: Track custom events with AdHawk analytics
 - 🎛️ **Preferences**: Access user preferences via the Gadgets API
 - ⚛️ **Framework Support**: Works with React, Angular, Vue, and vanilla JavaScript
+- 🧪 **Testable**: Run and test gadgets with no player attached via `createMockPlayer()`
 
 ## Installation
 
@@ -46,6 +47,9 @@ client.callback('hello', 'world');
 - [API Reference](#api-reference)
   - [Core Methods](#core-methods)
   - [Event Types](#event-types)
+  - [Preferences](#preferences)
+  - [Behavior With No Player Attached](#behavior-with-no-player-attached)
+- [Testing](#testing)
 - [Best Practices](#best-practices)
   - [Error Handling](#error-handling)
   - [Performance Considerations](#performance-considerations)
@@ -518,8 +522,8 @@ export default {
 Creates a new player client instance.
 
 #### Event Management
-- `on(eventType: EventType, callback: Function)` - Listen for events
-- `off(eventType: EventType)` - Remove event listener
+- `on(eventType: EventType, callback: Function)` - Listen for events. Multiple listeners per event type are supported; registering the same callback twice is a no-op.
+- `off(eventType: EventType, callback?: Function)` - Remove a specific listener, or every listener for the event type when `callback` is omitted.
 
 #### Device Information
 - `getDeviceKey(): Promise<string | null>` - Get unique device identifier
@@ -536,39 +540,153 @@ Creates a new player client instance.
 
 #### Analytics & Preferences
 - `track(eventName: string, properties?: IEventProperties): void` - Track analytics event
-- `getPrefs(): gadgets.Prefs | undefined` - Access user preferences
+- `getPrefs(): IPrefs` - Access user preferences. Never throws and never returns undefined; falls back to an in-memory mock when no player is attached.
 
 ### Event Types
 
 ```typescript
 enum EventType {
-  START = 'Start',    // Player started
-  STOP = 'Stop',      // Player stopped
-  COMMAND = 'Command' // Command received
+  START = 'Start',             // Player started
+  STOP = 'Stop',               // Player stopped
+  COMMAND = 'Command',         // Command received
+  CONFIG = 'Config',           // Config editor opened
+  POSTMESSAGE = 'PostMessage'  // postMessage received from the player
 }
+```
+
+### Preferences
+
+`getPrefs()` returns an `IPrefs` object: the Gadgets API `Prefs` surface (`getString`, `getBool`, `getInt`, `getFloat`, `getArray`, `set`, …) plus existence-aware accessors.
+
+```typescript
+const prefs = client.getPrefs();
+
+prefs.getString('language');      // '' when unset
+prefs.getBool('kenBurns');        // false when unset
+```
+
+Because an unset preference reads back as `''`, `false`, or `0`, those getters can't tell "not set" from a deliberate falsy value — which matters when honoring a `default_value: true` from `gadget.yaml`. Use `has()` or the `*OrNull` getters instead:
+
+```typescript
+// A designer's deliberate `false` is preserved; only an unset pref gets the default.
+const kenBurns = prefs.getBoolOrNull('kenBurns') ?? true;
+
+prefs.has('language');            // false when unset
+prefs.getStringOrNull('language') // null when unset
+prefs.getIntOrNull('maxItems')    // null when unset
+prefs.getFloatOrNull('ratio')     // null when unset
+prefs.getArrayOrNull('categories')// null when unset
+```
+
+> **Note:** the Gadgets API exposes no existence check, so with a real player attached `has()` is a probe — a preference reads as present when it is a non-empty string. A preference explicitly set to `''` is therefore reported as absent. Preferences backed by `createMockPlayer()` track existence exactly.
+
+### Behavior With No Player Attached
+
+Gadgets run in three contexts: the player, the CMS preview, and a local dev server. Every method degrades gracefully when no player is attached — nothing throws, so a gadget renders standalone with no defensive code.
+
+| API | Behavior with no player attached |
+|---|---|
+| `getPrefs()` | Returns a mock `IPrefs` backed by memory. Unset preferences read as `''` / `false` / `0` / `[]`. Logs *"Gadgets API not available, falling back to mock prefs"* once. |
+| `on()` / `off()` | Work normally. Events are delivered over `window`, so [`createMockPlayer()`](#testing) can drive them. |
+| `getDeviceTime(date?)` | Resolves to the current time as an ISO8601 string. The `date` argument is ignored, since there is no device timezone to translate into. |
+| `getWidth()` / `getHeight()` / `getDuration()` | Resolve to `null`. |
+| `getDevice()` / `getDeviceKey()` / `getLanguageCode()` | Resolve to `null`. |
+| `getDeviceTimeZoneName()` / `getDeviceTimeZoneID()` / `getDeviceTimeZoneOffset()` | Resolve to `null`. |
+| `getRevelRoot()` | Resolves to `null`. |
+| `getCommandMap()` | Resolves to an empty map (`{}`). |
+| `getSdkVersion()` | Resolves to the SDK version. Never depends on a player. |
+| `track()` / `timeEvent()` / `newEventSession()` | No-op. |
+| `sendCommand()` / `sendRemoteCommand()` / `callback()` / `finish()` | No-op. |
+| `isPreviewMode()` | Resolves to `true`. |
+| `applyConfig(prefs)` | Posts the config to the parent/opener window, which is how CMS preview applies it. |
+| `createDataTable()` / `createDataTableFromPref()` | Throw if the data table library is not loaded. Data tables require a player. |
+
+The first time a Client API method is called with no player attached, the SDK logs *"Client API not available, falling back to mock API"*. This is expected in dev and preview, not an error.
+
+## Testing
+
+`createMockPlayer()` stands in for a real player, making lifecycle handling — usually the least-tested part of a gadget — testable without one. It installs the same globals the player provides, so the client takes its normal code path, and `emit()` dispatches through the genuine event path rather than a stub.
+
+```typescript
+import { createPlayerClient, EventType } from '@reveldigital/client-sdk';
+import { createMockPlayer } from '@reveldigital/client-sdk/testing';
+
+const player = createMockPlayer({
+  prefs: { rotationSeconds: 2, kenBurns: false },
+  width: 1920,
+  height: 1080
+});
+
+// Create the client *after* the mock player, since it resolves the Client API on first use.
+const client = createPlayerClient();
+
+client.on(EventType.STOP, () => pause());
+client.on(EventType.START, () => resume());
+
+player.emit(EventType.STOP);   // assert animations frozen
+player.emit(EventType.START);  // assert resumed, not restarted
+
+expect(await client.getWidth()).toBe(1920);
+expect(client.getPrefs().getBoolOrNull('kenBurns')).toBe(false);
+
+player.dispose();  // restores any globals that were present beforehand
+```
+
+**Options** — all optional; anything unset behaves as it does with no player attached:
+
+| Option | Backs |
+|---|---|
+| `prefs` | `getPrefs()`. Values are coerced to strings, as in the player; arrays are joined with `\|`. |
+| `width` / `height` / `duration` | `getWidth()` / `getHeight()` / `getDuration()` |
+| `device` | `getDevice()`, and `getDeviceKey()` / `getLanguageCode()` / `getDeviceTimeZoneName()` |
+| `timeZoneID` / `timeZoneOffset` | `getDeviceTimeZoneID()` / `getDeviceTimeZoneOffset()` |
+| `revelRoot` / `commandMap` | `getRevelRoot()` / `getCommandMap()` |
+| `lang` / `country` / `moduleId` | `getPrefs().getLang()` / `.getCountry()` / `.getModuleId()` |
+
+**The returned `IMockPlayer`:**
+
+- `emit(eventType, detail?)` — dispatch a lifecycle event. For `EventType.COMMAND`, `detail` is `{ name, arg }`.
+- `prefs` — the backing `MockPrefs`, writable mid-test via `player.prefs.set('key', 'value')`.
+- `commands`, `remoteCommands`, `trackedEvents`, `timedEvents`, `callbacks`, `finishCount` — everything the gadget sent to the player, for assertions.
+- `dispose()` — uninstall. Call between tests to avoid leaking state.
+
+Because the client dispatches outbound calls through a promise, let them settle before asserting:
+
+```typescript
+client.sendCommand('volume', '11');
+await vi.waitFor(() => expect(player.commands).toHaveLength(1));
+expect(player.commands[0]).toEqual({ name: 'volume', arg: '11' });
 ```
 
 ## Best Practices
 
 ### Error Handling
 
+SDK methods don't throw when no player is attached — they return sensible defaults instead (see [Behavior With No Player Attached](#behavior-with-no-player-attached)). So handle `null`, and skip the defensive `try`/`catch`:
+
 ```javascript
 import { createPlayerClient } from "@reveldigital/client-sdk";
 
 const client = createPlayerClient();
 
+// Resolves to null in dev and CMS preview rather than throwing.
+const deviceKey = await client.getDeviceKey();
+
+if (deviceKey) {
+  console.log('Device key:', deviceKey);
+} else {
+  console.warn('Device key not available');
+}
+```
+
+The exceptions worth guarding are the data table methods, which throw if the data table library isn't loaded:
+
+```javascript
 try {
-  const deviceKey = await client.getDeviceKey();
-  if (deviceKey) {
-    // Handle success
-    console.log('Device key:', deviceKey);
-  } else {
-    // Handle null response
-    console.warn('Device key not available');
-  }
+  const dt = client.createDataTable('tbl_menu_items');
+  const result = await dt.getRows();
 } catch (error) {
-  // Handle errors
-  console.error('Failed to get device key:', error);
+  console.error('Data tables unavailable:', error);
 }
 ```
 

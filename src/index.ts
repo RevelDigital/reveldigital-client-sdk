@@ -1,5 +1,5 @@
-import { gadgets } from '@reveldigital/gadget-types';
 import { EventType } from './enums/event-types';
+import { IPrefs, MockPrefs, PrefsWrapper } from './prefs';
 import { IClient } from './interfaces/client.interface';
 import { IDictionary } from './interfaces/config.interface';
 import { IDataTableOptions } from './interfaces/datatable.interface';
@@ -35,6 +35,11 @@ export type { IDevice } from './interfaces/device.interface';
 export type { IEventProperties } from './interfaces/event-properties.interface';
 export type { ILocation } from './interfaces/location.interface';
 export type { IOptions } from './interfaces/options.interface';
+export type { IPrefs, PrefValues } from './prefs';
+
+// Re-exported so consumers can name the Gadgets API types returned by this SDK without
+// taking a direct dependency on @reveldigital/gadget-types.
+export type { gadgets } from '@reveldigital/gadget-types';
 
 
 /** @ignore */
@@ -56,7 +61,16 @@ export class PlayerClient {
       callback((<CustomEvent>e).detail);
     }
   }
-  private handlers = new Map<string, EventListenerOrEventListenerObject>();
+  /**
+   * Registered listeners, keyed by event type and then by the caller's callback, so a
+   * single callback can be removed without disturbing others on the same event type.
+   *
+   * @ignore
+   */
+  private handlers = new Map<string, Map<(data: any) => void, EventListenerOrEventListenerObject>>();
+
+  /** @ignore */
+  private mockPrefs: MockPrefs | undefined;
 
 
   constructor(options?: IOptions) {
@@ -103,27 +117,75 @@ export class PlayerClient {
 
   /**
    * Add an event listener for the specified player event.
-   * 
+   *
+   * Multiple listeners may be registered for the same event type. Registering the same
+   * callback twice for the same event type is a no-op, matching `addEventListener`.
+   *
+   * This method works with or without a player attached — events are delivered over
+   * `window`, so {@link createMockPlayer} can drive the real event path in a test.
+   *
    * @param {EventType} eventType type of event to listen for
    * @param callback function to call when the event is triggered
    */
   public on(eventType: EventType, callback: (data: any) => void): void {
 
-    this.handlers.set(eventType, this.handlerFn(callback));
+    let listeners = this.handlers.get(eventType);
 
-    window.addEventListener(`RevelDigital.${eventType}`,
-      this.handlers.get(eventType) as EventListenerOrEventListenerObject);
+    if (listeners === undefined) {
+      listeners = new Map<(data: any) => void, EventListenerOrEventListenerObject>();
+      this.handlers.set(eventType, listeners);
+    }
+
+    if (listeners.has(callback)) {
+      return;
+    }
+
+    const listener = this.handlerFn(callback);
+    listeners.set(callback, listener);
+
+    window.addEventListener(`RevelDigital.${eventType}`, listener);
   }
 
   /**
    * Remove an event listener for the specified player event.
-   * 
-   * @param {EventType} eventType type of event to listen for
+   *
+   * @example
+   * client.off(EventType.START, onStart);   // remove a single listener
+   * client.off(EventType.START);            // remove every listener for the event
+   *
+   * @param {EventType} eventType type of event to stop listening for
+   * @param callback Optional. The callback to remove, as passed to {@link PlayerClient.on}.
+   *                 If omitted, all listeners for this event type are removed.
    */
-  public off(eventType: EventType): void {
+  public off(eventType: EventType, callback?: (data: any) => void): void {
 
-    window.removeEventListener(`RevelDigital.${eventType}`,
-      this.handlers.get(eventType) as EventListenerOrEventListenerObject);
+    const listeners = this.handlers.get(eventType);
+
+    if (listeners === undefined) {
+      return;
+    }
+
+    if (callback !== undefined) {
+
+      const listener = listeners.get(callback);
+
+      if (listener === undefined) {
+        return;
+      }
+
+      window.removeEventListener(`RevelDigital.${eventType}`, listener);
+      listeners.delete(callback);
+
+      if (listeners.size === 0) {
+        this.handlers.delete(eventType);
+      }
+      return;
+    }
+
+    for (const listener of listeners.values()) {
+      window.removeEventListener(`RevelDigital.${eventType}`, listener);
+    }
+    this.handlers.delete(eventType);
   }
 
   /**
@@ -165,19 +227,48 @@ export class PlayerClient {
 
   /**
    * Accessor method for the user preferences interface exposed by the Gadgets API.
-   * 
+   *
    * See {@link https://developers.google.com/gadgets/docs/basic} for more details on the Gadgets API.
-   * 
+   *
+   * When no player is attached — a local dev server, CMS preview, or a test — this falls
+   * back to an in-memory {@link MockPrefs}, matching the mock fallback used by the rest of
+   * the Client API. Unset preferences then read as `''`, `false`, `0`, or `[]`. This method
+   * never throws and never returns undefined.
+   *
+   * The returned object extends the Gadgets API `Prefs` surface with {@link IPrefs.has}
+   * and nullable getters, which distinguish an unset preference from one deliberately
+   * set to a falsy value.
+   *
    * @example
-   * constructor(public client: PlayerClientService) {
-   *            let prefs = client.getPrefs();
-   *            let myString = prefs.getString('myStringPref');
-   * }
-   * @returns {gadgets.Prefs} Gadget API Prefs object
+   * const prefs = client.getPrefs();
+   * const myString = prefs.getString('myStringPref');
+   *
+   * // Honor a gadget.yaml `default_value: true` without mistaking a designer's
+   * // deliberate false for an unset preference.
+   * const kenBurns = prefs.getBoolOrNull('kenBurns') ?? true;
+   *
+   * @returns {IPrefs} Gadget API Prefs object, extended with existence-aware accessors
    */
-  public getPrefs(): gadgets.Prefs | undefined {
+  public getPrefs(): IPrefs {
 
-    return new ((window as any)['gadgets']['Prefs'])();
+    const prefsCtor = (window as any)?.gadgets?.Prefs;
+
+    if (typeof prefsCtor === 'function') {
+      return new PrefsWrapper(new prefsCtor());
+    }
+
+    // Cached so that values written via set() survive across calls, as they would in
+    // the player, and so the fallback is announced only once.
+    if (this.mockPrefs === undefined) {
+
+      console.log(
+        '%cGadgets API not available, falling back to mock prefs',
+        'background-color:blue; color:yellow;'
+      );
+      this.mockPrefs = new MockPrefs();
+    }
+
+    return new PrefsWrapper(this.mockPrefs);
   }
 
   /**
