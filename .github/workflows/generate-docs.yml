@@ -1,14 +1,22 @@
 name: Generate Docs
 run-name: ${{ github.actor }} is generating docs 📚
+# Runs after Semantic Release rather than alongside it. Both used to fire on the same
+# push to main, and this job's `git push` would land first — leaving semantic-release
+# behind the remote, which it treats as "don't publish" while still exiting 0. The
+# result was a green run and no release.
+#
+# The push below uses GITHUB_TOKEN, which by design does not trigger further workflow
+# runs, so chaining this way cannot loop back into Semantic Release.
 on:
-  push:
+  workflow_run:
+    workflows: ["Semantic Release Action"]
+    types: [completed]
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'typedoc.json'
+  workflow_dispatch:
 
 jobs:
   generate-docs:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -19,6 +27,10 @@ jobs:
           version: 10
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # workflow_run starts from the triggering run's SHA; take the tip of main so
+          # the docs commit lands on top of whatever the release just published.
+          ref: main
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
